@@ -94,7 +94,7 @@ private:
             return;
         uint32 itemEntry = itemTemplate->ItemId;
         uint32 itemSubclass = itemTemplate->SubClass;
-		std::string itemName = itemTemplate->Name1;
+		//std::string itemName = itemTemplate->Name1;
         
         // Put gems to ITEM_SUBCLASS_JEWELCRAFTING section
         if (itemTemplate->Class == ITEM_CLASS_GEM)
@@ -168,7 +168,7 @@ private:
                     trans->Append("REPLACE INTO custom_reagent_bank_account (account_id, item_entry, item_subclass, amount) VALUES ({}, {}, {}, {})", player->GetSession()->GetAccountId(), itemEntry, itemSubclass, itemAmount);
 					
 					ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
-					ChatHandler(player->GetSession()).SendSysMessage("'" + itemName + "' set to count of '" + std::to_string(count) + ".");
+					ChatHandler(player->GetSession()).SendSysMessage("'" + itemTemplate->Name1 + "' set to count of '" + std::to_string(count) + ".");
                 }
                 CharacterDatabase.CommitTransaction(trans);
             }
