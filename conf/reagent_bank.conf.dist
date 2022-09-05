@@ -15,3 +15,10 @@
 #
 
 ReagentBank.Enable = 1
+
+# ReagentBank.AccountWide
+#
+# Determines whether the reagent bank is account-wide or character specific.  Can be switched back and forth without breaking things.
+# default = 0
+#
+ReagentBank.AccountWide = 0

@@ -7,6 +7,7 @@ This module adds a reagent banker similar to later WoW expansions. This banker c
 * One-click button to deposit all reagents
 * Auto-sorting of reagents into categories
 * No storage limits
+* Switchable between account-wide and character specific
 
 ## Screenshots
 ![Capture](https://user-images.githubusercontent.com/98835050/157975217-0cc09b62-1043-4f6f-8dfa-7bf8541c3a4a.PNG)
