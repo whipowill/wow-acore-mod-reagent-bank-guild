@@ -171,7 +171,7 @@ private:
     }
 
 public:
-    npc_reagent_banker() : CreatureScript("npc_reagent_banker_account") { }
+    npc_reagent_banker_account() : CreatureScript("npc_reagent_banker_account") { }
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
