@@ -1,7 +1,7 @@
 #include "ReagentBankAccount.h"
 
 // Add player scripts
-class npc_reagent_banker : public CreatureScript
+class npc_reagent_banker_account : public CreatureScript
 {
 private:
     std::string GetItemLink(uint32 entry, WorldSession* session) const
@@ -277,5 +277,5 @@ public:
 // Add all scripts in one
 void AddSC_mod_reagent_bank_account()
 {
-    new npc_reagent_banker();
+    new npc_reagent_banker_account();
 }
