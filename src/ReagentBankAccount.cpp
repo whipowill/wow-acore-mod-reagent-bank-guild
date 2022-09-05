@@ -94,6 +94,7 @@ private:
             return;
         uint32 itemEntry = itemTemplate->ItemId;
         uint32 itemSubclass = itemTemplate->SubClass;
+		std::string itemName = itemTemplate->Name1;
         
         // Put gems to ITEM_SUBCLASS_JEWELCRAFTING section
         if (itemTemplate->Class == ITEM_CLASS_GEM)
@@ -106,10 +107,13 @@ private:
             // Item does not exist yet in storage
             entryToAmountMap[itemEntry] = count;
             entryToSubclassMap[itemEntry] = itemSubclass;
+			ChatHandler(player->GetSession()).PSendSysMessage(count + " of '" + itemName + "' was deposited.");
         }
         else
         {
-            entryToAmountMap[itemEntry] = entryToAmountMap.find(itemEntry)->second + count;
+			uint32 existingCount = entryToAmountMap.find(itemEntry)->second;
+            entryToAmountMap[itemEntry] = existingCount + count;
+			ChatHandler(player->GetSession()).PSendSysMessage(count + " of '" + itemName + "' was deposited (" + (existingCount + count) + " total).");
         }
         // The item counts have been updated, remove the original items from the player
         player->DestroyItem(bagSlot, itemSlot, true);
