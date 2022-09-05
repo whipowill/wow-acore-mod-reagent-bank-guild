@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
- */
-
-#include "ReagentBank.h"
+#include "ReagentBankAccount.h"
 
 // Add player scripts
 class npc_reagent_banker : public CreatureScript
@@ -175,7 +171,7 @@ private:
     }
 
 public:
-    npc_reagent_banker() : CreatureScript("npc_reagent_banker") { }
+    npc_reagent_banker() : CreatureScript("npc_reagent_banker_account") { }
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
@@ -279,7 +275,7 @@ public:
 };
 
 // Add all scripts in one
-void AddSC_mod_reagent_bank()
+void AddSC_mod_reagent_bank_account()
 {
     new npc_reagent_banker();
 }

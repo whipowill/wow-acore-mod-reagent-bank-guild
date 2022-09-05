@@ -1,13 +1,13 @@
 [worldserver]
 
 ########################################
-# Reagent Bank Config
+# Reagent Bank Account Config
 ########################################
 #
-#    ReagentBank.Enable
-#        Description: Enable the reagent bank
+#    ReagentBankAccount.Enable
+#        Description: Enable the reagent bank (account-wide)
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #
 
-ReagentBank.Enable = 1
+ReagentBankAccount.Enable = 1

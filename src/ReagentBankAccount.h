@@ -1,6 +1,6 @@
 
-#ifndef AZEROTHCORE_REAGENTBANK_H
-#define AZEROTHCORE_REAGENTBANK_H
+#ifndef AZEROTHCORE_REAGENTBANKACCOUNT_H
+#define AZEROTHCORE_REAGENTBANKACCOUNT_H
 #include "ScriptMgr.h"
 #include "Player.h"
 #include "Config.h"
@@ -22,4 +22,4 @@ enum GossipItemType : uint8
 };
 
 
-#endif //AZEROTHCORE_REAGENTBANK_H
+#endif //AZEROTHCORE_REAGENTBANKACCOUNT_H
