@@ -87,7 +87,6 @@ private:
 
     void UpdateItemCount(std::map<uint32, uint32> &entryToAmountMap, std::map<uint32, uint32> &entryToSubclassMap, Item* pItem, Player* player, uint32 bagSlot, uint32 itemSlot)
     {
-		WorldSession *session = player->GetSession();
         uint32 count = pItem->GetCount();
         ItemTemplate const *itemTemplate = pItem->GetTemplate();
         
@@ -108,13 +107,13 @@ private:
             // Item does not exist yet in storage
             entryToAmountMap[itemEntry] = count;
             entryToSubclassMap[itemEntry] = itemSubclass;
-			ChatHandler(player->GetSession()).PSendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited.");
+			ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited.");
         }
         else
         {
 			uint32 existingCount = entryToAmountMap.find(itemEntry)->second;
             entryToAmountMap[itemEntry] = existingCount + count;
-			ChatHandler(player->GetSession()).PSendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited (" + std::to_string(existingCount + count) + " total).");
+			ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited (" + std::to_string(existingCount + count) + " total).");
         }
         // The item counts have been updated, remove the original items from the player
         player->DestroyItem(bagSlot, itemSlot, true);
