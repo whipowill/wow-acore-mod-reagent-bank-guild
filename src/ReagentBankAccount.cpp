@@ -107,13 +107,13 @@ private:
             // Item does not exist yet in storage
             entryToAmountMap[itemEntry] = count;
             entryToSubclassMap[itemEntry] = itemSubclass;
-			ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited.");
+			//ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited.");
         }
         else
         {
 			uint32 existingCount = entryToAmountMap.find(itemEntry)->second;
             entryToAmountMap[itemEntry] = existingCount + count;
-			ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited (" + std::to_string(existingCount + count) + " total).");
+			//ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited (" + std::to_string(existingCount + count) + " total).");
         }
         // The item counts have been updated, remove the original items from the player
         player->DestroyItem(bagSlot, itemSlot, true);
@@ -166,6 +166,9 @@ private:
                     uint32 itemAmount = mapEntry.second;
                     uint32 itemSubclass = entryToSubclassMap.find(itemEntry)->second;
                     trans->Append("REPLACE INTO custom_reagent_bank_account (account_id, item_entry, item_subclass, amount) VALUES ({}, {}, {}, {})", player->GetSession()->GetAccountId(), itemEntry, itemSubclass, itemAmount);
+					
+					ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
+					ChatHandler(player->GetSession()).SendSysMessage("'" + itemName + "' set to count of '" + std::to_string(count) + ".");
                 }
                 CharacterDatabase.CommitTransaction(trans);
             }
@@ -281,6 +284,7 @@ public:
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next Page", item_subclass, gossipPageNumber + 1);
             }
+            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "|TInterface/ICONS/Ability_Spy:30:30:-18:0|tBack...", MAIN_MENU, 0);
             SendGossipMenuFor(player, NPC_TEXT_ID, creature->GetGUID());
         }));
     }
