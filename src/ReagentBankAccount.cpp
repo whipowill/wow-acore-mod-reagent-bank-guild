@@ -168,7 +168,7 @@ private:
                     trans->Append("REPLACE INTO custom_reagent_bank_account (account_id, item_entry, item_subclass, amount) VALUES ({}, {}, {}, {})", player->GetSession()->GetAccountId(), itemEntry, itemSubclass, itemAmount);
 					
 					ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
-					ChatHandler(player->GetSession()).SendSysMessage("'" + itemTemplate->Name1 + "' set to count of '" + std::to_string(itemAmount) + ".");
+					ChatHandler(player->GetSession()).SendSysMessage("'" + itemTemplate->Name1 + "' set to count of " + std::to_string(itemAmount) + ".");
                 }
                 CharacterDatabase.CommitTransaction(trans);
             }
