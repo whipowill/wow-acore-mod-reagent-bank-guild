@@ -258,7 +258,6 @@ public:
                     itemEntries.push_back(itemEntry);
                 } while (result->NextRow());
             }
-            AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "|TInterface/ICONS/Ability_Spy:30:30:-18:0|tBack...", MAIN_MENU, 0);
             if (gossipPageNumber > 0)
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Previous Page", item_subclass, gossipPageNumber - 1);
@@ -275,14 +274,6 @@ public:
                 }
                 uint32 itemEntry = itemEntries.at(i);
                 AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, GetItemIcon(itemEntry, 30, 30, -18, 0) + GetItemLink(itemEntry, session) + " (" + std::to_string(entryToAmountMap.find(itemEntry)->second) + ")", itemEntry, gossipPageNumber);
-            }
-			if (gossipPageNumber > 0)
-            {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Previous Page", item_subclass, gossipPageNumber - 1);
-            }
-            if (endValue < entryToAmountMap.size())
-            {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next Page", item_subclass, gossipPageNumber + 1);
             }
             AddGossipItemFor(player, GOSSIP_ICON_MONEY_BAG, "|TInterface/ICONS/Ability_Spy:30:30:-18:0|tBack...", MAIN_MENU, 0);
             SendGossipMenuFor(player, NPC_TEXT_ID, creature->GetGUID());
