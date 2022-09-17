@@ -121,7 +121,7 @@ private:
         else
         {
 			uint32 existingCount = itemsAddedMap.find(itemEntry)->second;
-            itemsAddedMap[itemEntry] = count;
+            itemsAddedMap[itemEntry] = existingCount + count;
         }
 
         // The item counts have been updated, remove the original items from the player
@@ -183,7 +183,7 @@ private:
         
         if (itemsAddedMap.size() != 0)
         {
-            for (std::pair<uint32, uint32> mapEntry : entryToAmountMap)
+            for (std::pair<uint32, uint32> mapEntry : itemsAddedMap)
             {
                 uint32 itemEntry = mapEntry.first;
                 uint32 itemAmount = mapEntry.second;
