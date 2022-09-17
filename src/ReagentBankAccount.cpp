@@ -85,7 +85,7 @@ private:
         }
     }
 
-    void UpdateItemCount(std::map<uint32, uint32> &entryToAmountMap, std::map<uint32, uint32> &entryToSubclassMap, Item* pItem, Player* player, uint32 bagSlot, uint32 itemSlot)
+    void UpdateItemCount(std::map<uint32, uint32> &entryToAmountMap, std::map<uint32, uint32> &entryToSubclassMap, std::map<uint32, uint32> &itemsAddedMap, Item* pItem, Player* player, uint32 bagSlot, uint32 itemSlot)
     {
         uint32 count = pItem->GetCount();
         ItemTemplate const *itemTemplate = pItem->GetTemplate();
@@ -94,7 +94,6 @@ private:
             return;
         uint32 itemEntry = itemTemplate->ItemId;
         uint32 itemSubclass = itemTemplate->SubClass;
-		//std::string itemName = itemTemplate->Name1;
         
         // Put gems to ITEM_SUBCLASS_JEWELCRAFTING section
         if (itemTemplate->Class == ITEM_CLASS_GEM)
@@ -107,14 +106,24 @@ private:
             // Item does not exist yet in storage
             entryToAmountMap[itemEntry] = count;
             entryToSubclassMap[itemEntry] = itemSubclass;
-			//ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited.");
         }
         else
         {
 			uint32 existingCount = entryToAmountMap.find(itemEntry)->second;
             entryToAmountMap[itemEntry] = existingCount + count;
-			//ChatHandler(player->GetSession()).SendSysMessage(std::to_string(count) + " of '" + itemName + "' was deposited (" + std::to_string(existingCount + count) + " total).");
         }
+
+        // Update our map that tracks what was deposited
+        if (!itemsAddedMap.count(itemEntry))
+        {
+            itemsAddedMap[itemEntry] = count;
+        }
+        else
+        {
+			uint32 existingCount = itemsAddedMap.find(itemEntry)->second;
+            itemsAddedMap[itemEntry] = count;
+        }
+
         // The item counts have been updated, remove the original items from the player
         player->DestroyItem(bagSlot, itemSlot, true);
     }
@@ -125,6 +134,7 @@ private:
         session->GetQueryProcessor().AddCallback( CharacterDatabase.AsyncQuery(query).WithCallback([=, this](QueryResult result) {
             std::map<uint32, uint32> entryToAmountMap;
             std::map<uint32, uint32> entryToSubclassMap;
+            std::map<uint32, uint32> itemsAddedMap;
             if (result)
             {
                 do {
@@ -140,7 +150,7 @@ private:
             {
                 if (Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
                 {
-                    UpdateItemCount(entryToAmountMap, entryToSubclassMap, pItem, player, INVENTORY_SLOT_BAG_0, i);
+                    UpdateItemCount(entryToAmountMap, entryToSubclassMap, itemsAddedMap, pItem, player, INVENTORY_SLOT_BAG_0, i);
                 }
 
             }
@@ -153,7 +163,7 @@ private:
                 for (uint32 j = 0; j < bag->GetBagSize(); j++) {
                     if (Item * pItem = player->GetItemByPos(i, j))
                     {
-                        UpdateItemCount(entryToAmountMap, entryToSubclassMap, pItem, player, i, j);
+                        UpdateItemCount(entryToAmountMap, entryToSubclassMap, itemsAddedMap, pItem, player, i, j);
                     }
                 }
             }
@@ -166,13 +176,28 @@ private:
                     uint32 itemAmount = mapEntry.second;
                     uint32 itemSubclass = entryToSubclassMap.find(itemEntry)->second;
                     trans->Append("REPLACE INTO custom_reagent_bank_account (account_id, item_entry, item_subclass, amount) VALUES ({}, {}, {}, {})", player->GetSession()->GetAccountId(), itemEntry, itemSubclass, itemAmount);
-					
-					ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
                 }
                 CharacterDatabase.CommitTransaction(trans);
             }
         }));
-        ChatHandler(player->GetSession()).PSendSysMessage("All reagents deposited successfully.");
+        
+        if (itemsAddedMap.size() != 0)
+        {
+            for (std::pair<uint32, uint32> mapEntry : entryToAmountMap)
+            {
+                uint32 itemEntry = mapEntry.first;
+                uint32 itemAmount = mapEntry.second;
+                
+                ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
+                std::string itemName = itemTemplate->Name1;
+			    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " of '" + itemName + "' was deposited.");
+            }
+        }
+        else
+        {
+            ChatHandler(player->GetSession()).PSendSysMessage("No reagents to deposit.");
+        }
+
         CloseGossipMenuFor(player);
     }
 
