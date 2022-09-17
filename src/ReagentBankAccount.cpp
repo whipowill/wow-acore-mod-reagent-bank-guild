@@ -181,6 +181,8 @@ private:
             }
             if (itemsAddedMap.size() != 0)
             {
+                ChatHandler(player->GetSession()).SendSysMessage("The following was deposited:");
+
                 for (std::pair<uint32, uint32> mapEntry : itemsAddedMap)
                 {
                     uint32 itemEntry = mapEntry.first;
@@ -188,7 +190,7 @@ private:
                     
                     ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
                     std::string itemName = itemTemplate->Name1;
-                    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " of '" + itemName + "' was deposited.");
+                    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " " + itemName);
                 }
             }
             else
