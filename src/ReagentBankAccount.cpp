@@ -283,13 +283,13 @@ public:
                     itemEntries.push_back(itemEntry);
                 } while (result->NextRow());
             }
-            if (gossipPageNumber > 0)
-            {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Previous Page", item_subclass, gossipPageNumber - 1);
-            }
             if (endValue < entryToAmountMap.size())
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Next Page", item_subclass, gossipPageNumber + 1);
+            }
+            if (gossipPageNumber > 0)
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Previous Page", item_subclass, gossipPageNumber - 1);
             }
             for (uint32 i = startValue; i <= endValue; i++)
             {
