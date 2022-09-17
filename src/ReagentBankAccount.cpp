@@ -179,24 +179,23 @@ private:
                 }
                 CharacterDatabase.CommitTransaction(trans);
             }
-        }));
-        
-        if (itemsAddedMap.size() != 0)
-        {
-            for (std::pair<uint32, uint32> mapEntry : itemsAddedMap)
+            if (itemsAddedMap.size() != 0)
             {
-                uint32 itemEntry = mapEntry.first;
-                uint32 itemAmount = mapEntry.second;
-                
-                ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
-                std::string itemName = itemTemplate->Name1;
-			    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " of '" + itemName + "' was deposited.");
+                for (std::pair<uint32, uint32> mapEntry : itemsAddedMap)
+                {
+                    uint32 itemEntry = mapEntry.first;
+                    uint32 itemAmount = mapEntry.second;
+                    
+                    ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
+                    std::string itemName = itemTemplate->Name1;
+                    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " of '" + itemName + "' was deposited.");
+                }
             }
-        }
-        else
-        {
-            ChatHandler(player->GetSession()).PSendSysMessage("No reagents to deposit.");
-        }
+            else
+            {
+                ChatHandler(player->GetSession()).PSendSysMessage("No reagents to deposit.");
+            }
+        }));
 
         CloseGossipMenuFor(player);
     }
