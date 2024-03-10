@@ -11,3 +11,5 @@
 #
 
 ReagentBankAccount.Enable = 1
+
+RemoteDeposit.Enable = 1

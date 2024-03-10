@@ -1,4 +1,5 @@
 #include "ReagentBankAccount.h"
+using namespace Acore::ChatCommands;
 
 // Add player scripts
 class npc_reagent_banker_account : public CreatureScript
@@ -128,79 +129,7 @@ private:
         player->DestroyItem(bagSlot, itemSlot, true);
     }
 
-    void DepositAllReagents(Player* player) {
-        WorldSession *session = player->GetSession();
-        std::string query = "SELECT item_entry, item_subclass, amount FROM custom_reagent_bank_account WHERE account_id = " + std::to_string(player->GetSession()->GetAccountId());
-        session->GetQueryProcessor().AddCallback( CharacterDatabase.AsyncQuery(query).WithCallback([=, this](QueryResult result) {
-            std::map<uint32, uint32> entryToAmountMap;
-            std::map<uint32, uint32> entryToSubclassMap;
-            std::map<uint32, uint32> itemsAddedMap;
-            if (result)
-            {
-                do {
-                    uint32 itemEntry = (*result)[0].Get<uint32>();
-                    uint32 itemSubclass = (*result)[1].Get<uint32>();
-                    uint32 itemAmount = (*result)[2].Get<uint32>();
-                    entryToAmountMap[itemEntry] = itemAmount;
-                    entryToSubclassMap[itemEntry] = itemSubclass;
-                } while (result->NextRow());
-            }
-            // Inventory Items
-            for (uint8 i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
-            {
-                if (Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
-                {
-                    UpdateItemCount(entryToAmountMap, entryToSubclassMap, itemsAddedMap, pItem, player, INVENTORY_SLOT_BAG_0, i);
-                }
-
-            }
-            // Bag Items
-            for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; i++)
-            {
-                Bag* bag = player->GetBagByPos(i);
-                if (!bag)
-                    continue;
-                for (uint32 j = 0; j < bag->GetBagSize(); j++) {
-                    if (Item * pItem = player->GetItemByPos(i, j))
-                    {
-                        UpdateItemCount(entryToAmountMap, entryToSubclassMap, itemsAddedMap, pItem, player, i, j);
-                    }
-                }
-            }
-            if (entryToAmountMap.size() != 0)
-            {
-                auto trans = CharacterDatabase.BeginTransaction();
-                for (std::pair<uint32, uint32> mapEntry : entryToAmountMap)
-                {
-                    uint32 itemEntry = mapEntry.first;
-                    uint32 itemAmount = mapEntry.second;
-                    uint32 itemSubclass = entryToSubclassMap.find(itemEntry)->second;
-                    trans->Append("REPLACE INTO custom_reagent_bank_account (account_id, item_entry, item_subclass, amount) VALUES ({}, {}, {}, {})", player->GetSession()->GetAccountId(), itemEntry, itemSubclass, itemAmount);
-                }
-                CharacterDatabase.CommitTransaction(trans);
-            }
-            if (itemsAddedMap.size() != 0)
-            {
-                ChatHandler(player->GetSession()).SendSysMessage("The following was deposited:");
-
-                for (std::pair<uint32, uint32> mapEntry : itemsAddedMap)
-                {
-                    uint32 itemEntry = mapEntry.first;
-                    uint32 itemAmount = mapEntry.second;
-                    
-                    ItemTemplate const *itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
-                    std::string itemName = itemTemplate->Name1;
-                    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " " + itemName);
-                }
-            }
-            else
-            {
-                ChatHandler(player->GetSession()).PSendSysMessage("No reagents to deposit.");
-            }
-        }));
-
-        CloseGossipMenuFor(player);
-    }
+    
 
 public:
     npc_reagent_banker_account() : CreatureScript("npc_reagent_banker_account") { }
@@ -304,10 +233,126 @@ public:
             SendGossipMenuFor(player, NPC_TEXT_ID, creature->GetGUID());
         }));
     }
+
+    void DepositAllReagents(Player* player) {
+        WorldSession* session = player->GetSession();
+        std::string query = "SELECT item_entry, item_subclass, amount FROM custom_reagent_bank_account WHERE account_id = " + std::to_string(player->GetSession()->GetAccountId());
+        session->GetQueryProcessor().AddCallback(CharacterDatabase.AsyncQuery(query).WithCallback([=, this](QueryResult result) {
+            std::map<uint32, uint32> entryToAmountMap;
+            std::map<uint32, uint32> entryToSubclassMap;
+            std::map<uint32, uint32> itemsAddedMap;
+            if (result)
+            {
+                do {
+                    uint32 itemEntry = (*result)[0].Get<uint32>();
+                    uint32 itemSubclass = (*result)[1].Get<uint32>();
+                    uint32 itemAmount = (*result)[2].Get<uint32>();
+                    entryToAmountMap[itemEntry] = itemAmount;
+                    entryToSubclassMap[itemEntry] = itemSubclass;
+                } while (result->NextRow());
+            }
+            // Inventory Items
+            for (uint8 i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; ++i)
+            {
+                if (Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+                {
+                    UpdateItemCount(entryToAmountMap, entryToSubclassMap, itemsAddedMap, pItem, player, INVENTORY_SLOT_BAG_0, i);
+                }
+
+            }
+            // Bag Items
+            for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; i++)
+            {
+                Bag* bag = player->GetBagByPos(i);
+                if (!bag)
+                    continue;
+                for (uint32 j = 0; j < bag->GetBagSize(); j++) {
+                    if (Item* pItem = player->GetItemByPos(i, j))
+                    {
+                        UpdateItemCount(entryToAmountMap, entryToSubclassMap, itemsAddedMap, pItem, player, i, j);
+                    }
+                }
+            }
+            if (entryToAmountMap.size() != 0)
+            {
+                auto trans = CharacterDatabase.BeginTransaction();
+                for (std::pair<uint32, uint32> mapEntry : entryToAmountMap)
+                {
+                    uint32 itemEntry = mapEntry.first;
+                    uint32 itemAmount = mapEntry.second;
+                    uint32 itemSubclass = entryToSubclassMap.find(itemEntry)->second;
+                    trans->Append("REPLACE INTO custom_reagent_bank_account (account_id, item_entry, item_subclass, amount) VALUES ({}, {}, {}, {})", player->GetSession()->GetAccountId(), itemEntry, itemSubclass, itemAmount);
+                }
+                CharacterDatabase.CommitTransaction(trans);
+            }
+            if (itemsAddedMap.size() != 0)
+            {
+                ChatHandler(player->GetSession()).SendSysMessage("The following was deposited:");
+
+                for (std::pair<uint32, uint32> mapEntry : itemsAddedMap)
+                {
+                    uint32 itemEntry = mapEntry.first;
+                    uint32 itemAmount = mapEntry.second;
+
+                    ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
+                    std::string itemName = itemTemplate->Name1;
+                    ChatHandler(player->GetSession()).SendSysMessage(std::to_string(itemAmount) + " " + itemName);
+                }
+            }
+            else
+            {
+                ChatHandler(player->GetSession()).PSendSysMessage("No reagents to deposit.");
+            }
+            }));
+
+        CloseGossipMenuFor(player);
+    }
+};
+
+class Reagent_Command : public CommandScript
+{
+public:
+    Reagent_Command() : CommandScript("ReagentBank_Command") {}
+
+    ChatCommandTable GetCommands() const override
+    {
+        static ChatCommandTable commandTable =
+        {
+            { "deposit", HandleDepositCommand, SEC_PLAYER, Console::No }
+        };
+
+        return commandTable;
+    }
+
+    static bool HandleDepositCommand(ChatHandler* handler)
+    {
+        Player* player = handler->GetSession()->GetPlayer();
+
+        npc_reagent_banker_account banker;
+
+        if (sConfigMgr->GetOption<int>("RemoteDeposit.Enable", 1) == 0) {
+            handler->SendSysMessage("The command is currently disabled");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        else
+        {
+            if (player->duel || player->GetMap()->IsBattleArena() || player->InBattleground() || player->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH) || player->isDead() || player->IsInCombat() || player->IsInFlight() || player->HasStealthAura() || player->HasInvisibilityAura())
+            {
+                handler->SendSysMessage("You can not deposit now.");
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
+            banker.DepositAllReagents(player);
+        }
+        return true;
+    }
 };
 
 // Add all scripts in one
 void AddSC_mod_reagent_bank_account()
 {
     new npc_reagent_banker_account();
+    new Reagent_Command();
 }

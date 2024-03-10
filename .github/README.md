@@ -11,6 +11,7 @@ https://github.com/ZhengPeiRu21/mod-reagent-bank
 * Auto-sorting of reagents into categories
 * No storage limits
 * Account-wide instead of character specific
+* Added a .deposit command to deposit reagents from anywhere
 
 ## Screenshots
 ![Capture](https://user-images.githubusercontent.com/98835050/157975217-0cc09b62-1043-4f6f-8dfa-7bf8541c3a4a.PNG)
