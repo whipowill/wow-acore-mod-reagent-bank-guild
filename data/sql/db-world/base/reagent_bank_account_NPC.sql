@@ -1,6 +1,6 @@
 
 SET
-@Entry = 190012,
+@Entry = 290011,
 @Name = "Ling";
 
 DELETE FROM `creature_template` WHERE `entry` = @Entry;
