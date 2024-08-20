@@ -3,7 +3,8 @@
 
 This module adds a reagent banker similar to later WoW expansions. This banker can free bag space by holding crafting reagents for players.
 
->[!NOTE} This is the account-wide version of the module found here:
+>[!NOTE]
+>This is the account-wide version of the module found here:
 >https://github.com/ZhengPeiRu21/mod-reagent-bank
 
 ## Features
