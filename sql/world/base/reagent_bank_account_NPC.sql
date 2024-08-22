@@ -1,8 +1,8 @@
 
 SET
 @Entry = 290011,
-@Name = "Ling";
-@Title = "Reagent Banker"
+@Name = "Ling",
+@Title = "Reagent Banker";
 
 DELETE FROM `creature_template` WHERE `entry` = @Entry;
 DELETE FROM `creature_template_model` WHERE `CreatureID` = @Entry;
