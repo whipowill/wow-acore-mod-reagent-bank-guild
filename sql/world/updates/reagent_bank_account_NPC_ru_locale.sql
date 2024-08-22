@@ -1,8 +1,8 @@
 
 SET
 @Entry = 290011,
-@Name = "Линг";
-@Title = "Банкир реагентов"
+@Name = "Линг",
+@Title = "Банкир реагентов";
 
 DELETE FROM `creature_template_locale` WHERE `entry` = @Entry;
 
