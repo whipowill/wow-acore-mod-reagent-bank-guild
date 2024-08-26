@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS `custom_reagent_bank_account` (
     `account_id` int(11) NOT NULL,
     `item_entry` int(11) NOT NULL,
